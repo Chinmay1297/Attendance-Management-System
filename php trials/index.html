@@ -1,0 +1,260 @@
+
+<html>
+<head>
+	<script src="https://www.gstatic.com/firebasejs/5.4.2/firebase.js"></script>
+	<script>
+	  // Initialize Firebase
+	  var config = {
+	    apiKey: "AIzaSyAsDnXD02GeLCn59Wx2CgQqOwRqQo0_J7Q",
+	    authDomain: "barcoder-c2af4.firebaseapp.com",
+	    databaseURL: "https://barcoder-c2af4.firebaseio.com",
+	    projectId: "barcoder-c2af4",
+	    storageBucket: "barcoder-c2af4.appspot.com",
+	    messagingSenderId: "88188653581"
+	  };
+	  firebase.initializeApp(config);
+	</script>
+	<title>AMS</title>
+	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+	<script src="js/jquery.js"></script>
+	<script src="js/bootstrap.js"></script>
+	<link href="https://fonts.googleapis.com/css?family=Yatra+One" rel="stylesheet">
+	<style>
+		body {
+			   background-image: url("images/bg2.jpg");
+			   background-color: #cccccc;
+			   background-repeat: no-repeat;
+			   background-size: cover;
+			}
+			.heading {
+				font-family: 'Yatra One', cursive;
+				color: #0049aa;
+				font-size: 60px;
+			}
+			.login{
+				border:1px silver solid;
+				border-radius: 10px;
+				box-shadow: 0 11px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			}
+			.login-label{
+				color: #2a2b2d;
+			}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<br><br>
+		<img src="images/logo.png" width="20%" style="margin-left: auto; margin-right: auto; display: block;" alt="Image not found">
+		<br>
+		<p class="heading text-center">Attendance Management System <i class="fas glyphicon glyphicon-pencil"></i></p>
+		<div class="col-md-4 col-md-offset-4">
+			<form class="login login-form" style="padding: 20px;" method="post">
+				<div class="form-group">
+					<label class="login-label">Registration Number</label>
+					<input type="text" class="form-control" name="username_login" id="username_login" />
+				</div>
+				<div class="form-group">
+					<label class="login-label">Password</label>
+					<input type="text" class="form-control" name="userpassword_login" id="userpassword_login" />
+				</div>
+				<a style="color: #2a2b2d;" href="#">Forgot Password ?</a>
+				<div class="form-group">
+					<input class="btn btn-primary btn-block" type="button" value="Login" onclick="login_user();">
+				</div>
+				<div class="form-group">
+					<button class="btn btn-primary btn-block" data-toggle="modal" data-target="#proceed_modal"  data-backdrop="static" data-keyboard="false"><i class="fas fa-user-plus"></i>&nbsp; &nbsp; Sign up</button>
+				</div>
+			</form>
+		</div>
+		<div id="proceed_modal" class="modal fade">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h3>User Registration <button class="close" data-dismiss="modal">&times;</button></h3>
+						
+					</div>
+					<div class="modal-body">
+						<form method="post">
+							<div class="form-group">
+								<label for="name">Name</label>
+								<input type="text" id="name" name="name" class="form-control" placeholder="Full Name" required>
+							</div>
+							<div class="form-group">
+								<label for="email">Email</label>
+								<input type="email" id="email" name="email" class="form-control" placeholder="xyz@abc.com" required>
+							</div>
+							<div class="form-group">
+								<script>
+									$(".reveal").on('click',function() 
+									{
+									    var $pwd = $(".pwd");
+									    if ($pwd.attr('type') === 'password') {
+									        $pwd.attr('type', 'text');
+									    } else {
+									        $pwd.attr('type', 'password');
+									    }
+									});
+								</script>
+								<label for="password">Password <p id="passwordStrength" style="font-size: 10px;"></p></label>
+								<input type="password" name="password" placeholder="Abc123#" class="form-control pwd" id="password1" oninput="scorePassword(this.value);" required>
+								
+							</div>
+							<div class="form-group">
+								<label for="cnfpassword">Confirm Password</label>
+								<input disabled type="password" class="form-control" id="password2" onblur="pwdsamechk(this.value);">
+								
+							</div>
+							<div class="form-group">
+								<label for="contact">Contact Number</label>
+								<input type="number" id="contact" name="contact" class="form-control" placeholder="9876543210" required>
+							</div>
+							<div class="form-group">
+								<label for="city">States</label>
+								<input list="states" name="states" class="form-control" required>
+								<datalist id="states">
+									<option>Odisha</option>
+									<option>Punjab</option>
+									<option>Delhi</option>
+									<option>Madhya Pradesh</option>
+									<option>Uttar Pradesh</option>
+									<option>Mumbai</option>
+								</datalist>
+							</div>
+							<div class="form-group">
+								<label for="address">Delivery Address</label>
+								<textarea class="form-control" name="delivery_address" rows="5" required></textarea>
+							</div>
+							<div class="form-group">
+								<input type="submit" id="userSubmit" name="customer_submit" value="Submit" class="btn btn-danger btn-block">
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<h3>Users List</h3>
+	<script>
+	
+ 
+			  //var tblUsers = document.getElementById('tbl_users_list');
+			  var databaseRef = firebase.database().ref('facultyData/');
+			  var rowIndex = 1;
+			   function login_user()
+			  {
+			  	var uname = document.getElementById('username_login').value;
+			  	var childRef=databaseRef.child(uname);
+			  	var upwd = document.getElementById('userpassword_login').value;
+			  	var login_var=0;
+			  	
+			  	databaseRef.once('value', function(snapshot) 
+				  {
+				  	if (snapshot.child(uname).exists()) 
+				  	{
+				  		snapshot.once(function(childSnapshot){
+				  			//var childKey = childSnapshot.key;
+							var childData = childSnapshot.val(); 
+							if(upwd==childData.user_password)
+						   {
+						   	alert("success");
+						   	//window.open("home.html");
+						   }	
+				  		}); 
+				  		
+				  			//alert(childRef.toJSON());
+				  		
+				  		
+					}
+				  });
+			  }
+
+	</script>
+	<script>
+		function pwdsamechk(passw)
+		{
+			var p1=document.getElementById("password1").value;
+			var p2=passw;
+			if(p1!=p2)
+			{
+				document.getElementById('passwordStrength').innerHTML = 'Passwords do not match each other';
+		    	document.getElementById("passwordStrength").style.color = "red";
+		    	document.getElementById("userSubmit").disabled = true;
+			}
+			else
+			{
+				document.getElementById('passwordStrength').innerHTML = 'You are good to go';
+		    	document.getElementById("passwordStrength").style.color = "green";
+		    	document.getElementById("userSubmit").disabled = false;
+			}
+		}
+	</script>
+	<script>
+		function scorePassword(pass) 
+		{
+			var a=0,b=0,c=0,d=0;
+			var p=" ",q=" ",r=" ",s=" ";
+		   	var word="Passwords must contain atleast one: ";
+		    
+		    var digits= /\d/.test(pass);
+		    var lower= /[a-z]/.test(pass);
+		    var upper= /[A-Z]/.test(pass);
+		    var specialChar= /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pass);
+		    
+		    if(digits==false)
+		    {
+		    	a=1;
+		    	p="digit ";
+		    	word=word+p;
+		    	// alert('must contain a digit');
+		    }
+		     if(lower==false)
+		    {
+		    	b=1;
+		    	q=",lower-case letter ";
+		    	word=word+q;
+		    }
+		    if(upper==false)
+		    {
+		    	c=1;
+		    	r=",upper-case letter ";
+		    	word=word+r;
+		    }
+		    if(specialChar==false)
+		    {
+		    	d=1;
+		    	s="& special character ";
+		    	word=word+s;
+		    }
+		    if(a||b||c||d)
+		    {
+		    	 document.getElementById('passwordStrength').innerHTML = word;
+		    	 document.getElementById("passwordStrength").style.color = "red";
+		    }
+		    if((a||b||c||d)==0)
+		    {
+		    	if(pass.length<8)
+		    	{
+		    		document.getElementById('passwordStrength').innerHTML = 'Password cannot have less than 8 characters';
+		    		document.getElementById("passwordStrength").style.color = "red";
+		    	}
+		    	else
+		    	{
+		    		document.getElementById('passwordStrength').innerHTML = 'You are good to go';
+		    		document.getElementById("passwordStrength").style.color = "green";
+		    		document.getElementById("password2").disabled = false;
+		    	}
+		    	
+		    }
+		}
+		
+	</script>
+</body>
+<script>
+	
+ 
+</script>
+</html>

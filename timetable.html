@@ -1,0 +1,454 @@
+<html>
+<head>
+	<script>
+		//USER DETAILS
+		var current_faculty_id=sessionStorage.getItem("faculty_reg_no");  //to be fetched from sessions
+	</script>
+	<title>AMS| Time Table</title>
+	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+	<script src="js/jquery.js"></script>
+	<script src="js/bootstrap.js"></script>
+	<link href="https://fonts.googleapis.com/css?family=Yatra+One" rel="stylesheet">
+	
+
+	<!-----------------SCRIPT FOR CONNECTING FIREBASE------------------------->
+	<script src="https://www.gstatic.com/firebasejs/5.4.2/firebase.js"></script>
+	<script>
+	  // Initialize Firebase
+	  var config = {
+	    apiKey: "AIzaSyAsDnXD02GeLCn59Wx2CgQqOwRqQo0_J7Q",
+	    authDomain: "barcoder-c2af4.firebaseapp.com",
+	    databaseURL: "https://barcoder-c2af4.firebaseio.com",
+	    projectId: "barcoder-c2af4",
+	    storageBucket: "barcoder-c2af4.appspot.com",
+	    messagingSenderId: "88188653581"
+	  };
+	  firebase.initializeApp(config);
+
+	  	var d = new Date();
+	  	var weekday = new Array(7);
+		weekday[0] =  "sunday";
+		weekday[1] = "monday";
+		weekday[2] = "tuesday";
+		weekday[3] = "wednesday";
+		weekday[4] = "thursday";
+		weekday[5] = "friday";
+		weekday[6] = "saturday";
+		var n = weekday[d.getDay()];
+	</script>
+	<!-----------------SCRIPT FOR CONNECTING FIREBASE------------------------->
+	<style>
+		body{
+			 background-image: url("images/bg2 (2).jpg");
+			   background-color: #cccccc;
+			   background-repeat: no-repeat;
+			   background-size: cover;
+		}
+
+		.card {
+		    /* Add shadows to create the "card" effect */
+		    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+		    transition: 0.3s;
+		}
+
+		/* On mouse-over, add a deeper shadow */
+		.card:hover {
+		    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+		}
+	</style>
+</head>
+<body onload="load_details();">
+	<div class="container-fluid">
+		<nav class="navbar navbar-inverse navbar-fixed-top navpad1">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a href="#" class="navbar-brand" style="font-style: italic;">AMS</a>
+				</div>
+				<ul class="nav navbar-nav">
+					<li><a href="home.html">Home</a></li>
+					<li><a href="timetable.html">Time Table</a></li>
+					<li><a href="markAttendance.html">Mark Attendance</a></li>
+					<li><a href="announcements.html">Announcements</a></li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="profile.html" id="set_faculty_name">Welcome</a></li>
+					<li style="margin-right: 20px;"><a href="logout.html">Logout</a></li>
+				</ul>
+			</div>
+		</nav>
+		<div class="container">
+			<div style="margin-top: 60px;">
+				<br><br><br>
+					<div class="col-md-12 card" style="background-color: white; border-radius: 10px;">
+						<h3 class="text-center">Weekely Time Table</h3>
+						<table  style="font-size: 12px;"  class="table table-bordered table-responsive table-hover" id="time_table_list" border="1">
+							<thead>
+								<tr>
+								   <th></th>
+								   <th>9-10</th>
+								   <th>10-11</th>
+								   <th>11-12</th>
+								   <th>12-1</th>
+								   <th>1-2</th>
+								   <th>2-3</th>
+								   <th>3-4</th>
+								   <th>4-5</th>
+								</tr>
+							</thead>
+						</table>
+					</div>
+				</div>
+			</div>		
+		</div>
+	</div>
+</body>
+<script>
+	function load_details()
+	{
+		if(sessionStorage.getItem("faculty_name")==null)
+		{
+			window.location.href="index.html";
+		}
+		else
+		{
+			document.getElementById("set_faculty_name").innerHTML = sessionStorage.getItem("faculty_name");	
+		}
+
+		var databaseRef = firebase.database().ref('FT/'+current_faculty_id+'/monday/');
+		//console.log("working");
+		var table = document.getElementById("time_table_list");
+
+		databaseRef.once('value', function(snapshot) 
+		{
+			var row = table.insertRow(1);
+
+			var cell1 = row.insertCell(0); //day
+			var cell2 = row.insertCell(1); //9
+			var cell3 = row.insertCell(2); //10
+			var cell4 = row.insertCell(3); //11
+			var cell5 = row.insertCell(4); //12
+			var cell6 = row.insertCell(5); //1
+			var cell7 = row.insertCell(6); //2
+			var cell8 = row.insertCell(7); //3
+			var cell9 = row.insertCell(8); //4
+
+			
+			
+
+			snapshot.forEach(function(childSnapshot) 
+			{
+				var childKey = childSnapshot.key;
+			   	var childData = childSnapshot.val();
+			   	var section=childSnapshot.child('section').val();
+			   	var subject_code=childSnapshot.child('subject').val();
+			   	var subject_name= childSnapshot.child('subject_name').val();	
+			   	console.log('Time: '+childKey+" "+section+" "+subject_code+" "+subject_name);
+
+			   	cell1.innerHTML = "<b>Monday</b>"
+			   if(childKey=='9')
+			   {
+			   		cell2.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='10')
+			   {
+			   		cell3.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='11')
+			   {
+			   		cell4.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='12')
+			   {
+			   		cell5.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='1')
+			   {
+			   		cell6.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='2')
+			   {
+			   		cell7.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='3')
+			   {
+			   		cell8.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='4')
+			   {
+			   		cell9.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			});
+		});
+		var databaseRef = firebase.database().ref('FT/'+current_faculty_id+'/tuesday/');
+		//console.log("working");
+		var table = document.getElementById("time_table_list");
+
+		databaseRef.once('value', function(snapshot) 
+		{
+			var row = table.insertRow(2);
+
+			var cell1 = row.insertCell(0); //day
+			var cell2 = row.insertCell(1); //9
+			var cell3 = row.insertCell(2); //10
+			var cell4 = row.insertCell(3); //11
+			var cell5 = row.insertCell(4); //12
+			var cell6 = row.insertCell(5); //1
+			var cell7 = row.insertCell(6); //2
+			var cell8 = row.insertCell(7); //3
+			var cell9 = row.insertCell(8); //4
+
+			
+			
+
+			snapshot.forEach(function(childSnapshot) 
+			{
+				var childKey = childSnapshot.key;
+			   	var childData = childSnapshot.val();
+			   	var section=childSnapshot.child('section').val();
+			   	var subject_code=childSnapshot.child('subject').val();
+			   	var subject_name= childSnapshot.child('subject_name').val();	
+			   	console.log('Time: '+childKey+" "+section+" "+subject_code+" "+subject_name);
+
+			   	cell1.innerHTML = "<b>Tuesday</b>"
+			   if(childKey=='9')
+			   {
+			   		cell2.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='10')
+			   {
+			   		cell3.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='11')
+			   {
+			   		cell4.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='12')
+			   {
+			   		cell5.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='1')
+			   {
+			   		cell6.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='2')
+			   {
+			   		cell7.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='3')
+			   {
+			   		cell8.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='4')
+			   {
+			   		cell9.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			});
+		});
+		var databaseRef = firebase.database().ref('FT/'+current_faculty_id+'/wednesday/');
+		//console.log("working");
+		var table = document.getElementById("time_table_list");
+
+		databaseRef.once('value', function(snapshot) 
+		{
+			var row = table.insertRow(3);
+
+			var cell1 = row.insertCell(0); //day
+			var cell2 = row.insertCell(1); //9
+			var cell3 = row.insertCell(2); //10
+			var cell4 = row.insertCell(3); //11
+			var cell5 = row.insertCell(4); //12
+			var cell6 = row.insertCell(5); //1
+			var cell7 = row.insertCell(6); //2
+			var cell8 = row.insertCell(7); //3
+			var cell9 = row.insertCell(8); //4
+
+			
+			
+
+			snapshot.forEach(function(childSnapshot) 
+			{
+				var childKey = childSnapshot.key;
+			   	var childData = childSnapshot.val();
+			   	var section=childSnapshot.child('section').val();
+			   	var subject_code=childSnapshot.child('subject').val();
+			   	var subject_name= childSnapshot.child('subject_name').val();	
+			   	console.log('Time: '+childKey+" "+section+" "+subject_code+" "+subject_name);
+
+			   	cell1.innerHTML = "<b>Wednesday</b>"
+			   if(childKey=='9')
+			   {
+			   		cell2.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='10')
+			   {
+			   		cell3.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='11')
+			   {
+			   		cell4.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='12')
+			   {
+			   		cell5.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='1')
+			   {
+			   		cell6.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='2')
+			   {
+			   		cell7.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='3')
+			   {
+			   		cell8.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='4')
+			   {
+			   		cell9.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			});
+		});
+		var databaseRef = firebase.database().ref('FT/'+current_faculty_id+'/thursday/');
+		//console.log("working");
+		var table = document.getElementById("time_table_list");
+
+		databaseRef.once('value', function(snapshot) 
+		{
+			var row = table.insertRow(4);
+
+			var cell1 = row.insertCell(0); //day
+			var cell2 = row.insertCell(1); //9
+			var cell3 = row.insertCell(2); //10
+			var cell4 = row.insertCell(3); //11
+			var cell5 = row.insertCell(4); //12
+			var cell6 = row.insertCell(5); //1
+			var cell7 = row.insertCell(6); //2
+			var cell8 = row.insertCell(7); //3
+			var cell9 = row.insertCell(8); //4
+
+			
+			
+
+			snapshot.forEach(function(childSnapshot) 
+			{
+				var childKey = childSnapshot.key;
+			   	var childData = childSnapshot.val();
+			   	var section=childSnapshot.child('section').val();
+			   	var subject_code=childSnapshot.child('subject').val();
+			   	var subject_name= childSnapshot.child('subject_name').val();	
+			   	console.log('Time: '+childKey+" "+section+" "+subject_code+" "+subject_name);
+
+			   	cell1.innerHTML = "<b>Thursday</b>"
+			   if(childKey=='9')
+			   {
+			   		cell2.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='10')
+			   {
+			   		cell3.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='11')
+			   {
+			   		cell4.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='12')
+			   {
+			   		cell5.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='1')
+			   {
+			   		cell6.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='2')
+			   {
+			   		cell7.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='3')
+			   {
+			   		cell8.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='4')
+			   {
+			   		cell9.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			});
+		});
+		var databaseRef = firebase.database().ref('FT/'+current_faculty_id+'/friday/');
+		//console.log("working");
+		var table = document.getElementById("time_table_list");
+
+		databaseRef.once('value', function(snapshot) 
+		{
+			var row = table.insertRow(5);
+
+			var cell1 = row.insertCell(0); //day
+			var cell2 = row.insertCell(1); //9
+			var cell3 = row.insertCell(2); //10
+			var cell4 = row.insertCell(3); //11
+			var cell5 = row.insertCell(4); //12
+			var cell6 = row.insertCell(5); //1
+			var cell7 = row.insertCell(6); //2
+			var cell8 = row.insertCell(7); //3
+			var cell9 = row.insertCell(8); //4
+
+			
+			
+
+			snapshot.forEach(function(childSnapshot) 
+			{
+				var childKey = childSnapshot.key;
+			   	var childData = childSnapshot.val();
+			   	var section=childSnapshot.child('section').val();
+			   	var subject_code=childSnapshot.child('subject').val();
+			   	var subject_name= childSnapshot.child('subject_name').val();	
+			   	console.log('Time: '+childKey+" "+section+" "+subject_code+" "+subject_name);
+
+			   	cell1.innerHTML = "<b>Friday</b>"
+			   if(childKey=='9')
+			   {
+			   		cell2.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='10')
+			   {
+			   		cell3.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='11')
+			   {
+			   		cell4.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='12')
+			   {
+			   		cell5.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='1')
+			   {
+			   		cell6.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='2')
+			   {
+			   		cell7.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='3')
+			   {
+			   		cell8.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			   if(childKey=='4')
+			   {
+			   		cell9.innerHTML = section+"<br>"+subject_code+" "+subject_name;
+			   }
+			});
+		});
+
+		
+		
+		
+
+	}
+	
+	//finding timetable
+
+	
+</script>
+</html>
